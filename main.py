@@ -29,4 +29,29 @@ if resp == '1':
     print('Increased:', incr, '. Decreased:', decr)
 
 else:
-    pass
+    print('Part 2')
+    windows = {}
+    incr = 0
+    decr = 0
+    i = 0
+    for number in puzzle:
+        windows[i] = {}
+        if i !=0:
+            try:
+                number2 = puzzle[i+1]
+                number3 = puzzle[i+2]
+                windows[i]['quantity'] = int(number)+int(number2)+int(number3)
+                if windows[i]['quantity'] > windows[i-1]['quantity']:
+                    windows[i]['status'] = 'increased'
+                    incr+=1
+                else:
+                    windows[i]['status'] = 'decreased'
+                    decr+=1
+            except IndexError:
+                break
+        else:
+            windows[i]['quantity'] = 0
+        i+=1
+    print('Increased:',incr,'. Decreased:',decr)
+
+
