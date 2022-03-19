@@ -20,18 +20,28 @@ def print_line(l):
 def detect_row_column(chart, numbers_played):
     # Detect Rows
     rows = chart
+    selected=None
+    filtered_list = None
     # Detect Columns
     columns = get_colums(chart)
     # Detect if there are mathed rows
     for row in rows:
         if set(row) <= set(numbers_played):
-            print('Row',row)
-            return row
+            # print('Row',row)
+            selected = row
+            break
     for column in columns:
         if set(column) <= set(numbers_played):
-            print('Row',row)
-            return column
-    return None
+            # print('Row',row)
+            selected = column
+            break
+    if selected:
+        flat_list = [number for line in chart for number in line]
+        filtered_list = []
+        for number in flat_list:
+            if number not in numbers_played:
+                filtered_list.append(number)
+    return [selected,filtered_list]
 
 
 with open("./puzzle.txt") as file:
@@ -56,7 +66,7 @@ if part == '1':
             # print(j)
             # print_line(bingo_charts[j])
             # print('Numbers')
-            selected = detect_row_column(filter_list(bingo_charts[j]),numbers[0:i])
+            selected,ulist = detect_row_column(filter_list(bingo_charts[j]),numbers[0:i])
             j+=1
             if selected:
                 break
@@ -68,8 +78,8 @@ if part == '1':
     print('Last Number:',last_number)
     sum = 0
     # Missing numbers unselected
-    # for number in selected:
-    #     sum += int(number)
+    for number in ulist:
+        sum += int(number)
     print("Final Score:",int(last_number)*int(sum))
 
 else:
