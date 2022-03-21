@@ -1,42 +1,38 @@
-
+import numpy as np
+import math
 with open("./input.txt") as file:
-    puzzle = file.read().splitlines()
-    puzzle = [int(number) for line in puzzle for number in line.split(",")]
-
+    puzzle = file.read().splitlines()[0]
+    puzzle = [int(number) for number in puzzle.split(",")]
 
 part = '2'
 if part == '1':
     print("Part 1")
-    day =puzzle
-    days = 0
-  
-    for i in range(0, 256):
-        print(i)
-        day = [number-1 for number in day]
-        j = 0
-        if -1 in day:
-            occurrences = day.count(-1)
-            if occurrences:
-                day.extend([8]*occurrences)
-            day = [6 if number == -1 else number for number in day]
-            
+    positions = puzzle
+    fuel = 0
+    selected_position = 0
 
+    for position in positions:
+        fuel_required = 0
+        i = 0
+        for number in puzzle:
+            fuel_required += abs(number - position)
+        if fuel_required < fuel or fuel == 0:
+            fuel = fuel_required
+            selected_position = position
 
-    print('Fishes:', len(day))
+    print('Total Cost:', fuel, "Position:", selected_position)
+
 else:
     print('Part 2')
-    from collections import Counter
-    data1 = puzzle
-    lifes = dict(Counter(data1))
+    positions = puzzle
+    fuel = 0
 
-    days = 256
-    for day in range(1, days+1):
-        lifes = {l: (0 if lifes.get(l+1) is None else lifes.get(l+1)) for l in range(-1, 8)}
-        # make all 8s -1 because we create new fish with 8 after it reaches 0
-        lifes[8] = lifes[-1]
-        # add new lifes to that are exhausted
-        lifes[6] += lifes[-1]
-        # reset exhausted lifes
-        lifes[-1] = 0 
+    position = np.mean(puzzle)
+    position = math.floor(position) if position-int(position)<=0.6 else math.ceil(position)
 
-    print(sum(lifes.values()))
+    for number in puzzle:
+        steps = abs(number-position)
+        for i in range(1,steps+1):
+            fuel +=i
+
+    print('Total Cost:', fuel)
