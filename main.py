@@ -1,38 +1,22 @@
-import numpy as np
-import math
+
 with open("./input.txt") as file:
-    puzzle = file.read().splitlines()[0]
-    puzzle = [int(number) for number in puzzle.split(",")]
+    puzzle = file.read().splitlines()
+    puzzle = [[word.strip() for word in line.split("|")] for line in puzzle]
+
 
 part = '2'
 if part == '1':
     print("Part 1")
-    positions = puzzle
-    fuel = 0
-    selected_position = 0
+    acc = 0
+    right_puzzle = [word for line in puzzle for word in line[1].split(" ")]
+    default = {2: 1, 4: 4, 3: 7, 7: 8}
 
-    for position in positions:
-        fuel_required = 0
-        i = 0
-        for number in puzzle:
-            fuel_required += abs(number - position)
-        if fuel_required < fuel or fuel == 0:
-            fuel = fuel_required
-            selected_position = position
+    for word in right_puzzle:
+        if len(word) in default.keys():
+            acc += 1
 
-    print('Total Cost:', fuel, "Position:", selected_position)
-
+    print('Instances:', acc)
 else:
     print('Part 2')
-    positions = puzzle
-    fuel = 0
-
-    position = np.mean(puzzle)
-    position = math.floor(position) if position-int(position)<=0.6 else math.ceil(position)
-
-    for number in puzzle:
-        steps = abs(number-position)
-        for i in range(1,steps+1):
-            fuel +=i
-
-    print('Total Cost:', fuel)
+    
+        
