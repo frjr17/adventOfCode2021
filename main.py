@@ -1,57 +1,86 @@
+from turtle import right
+
+
 with open("./puzzle.txt") as file:
-    puzzle = file.read().splitlines()
-    # print(puzzle)
+    puzzle = [[int(number) for number in line]
+              for line in file.read().splitlines()]
 
 
-resp = input("Part 1 or 2?")
+# for line in puzzle:
+#     print(line)
 
-if resp == '1':
-    print("Part 1")
-    dict1 = {}
-    incr = 0
-    decr = 0
-    i = 0
 
-    for number in puzzle:
-        if i != 0:
-            before_number = puzzle[i-1]
-            if number > before_number:
-                print(number, 'increased from', before_number)
-                dict1[number] = 'increased'
-                incr += 1
-            else:
-                print(number, 'decreased from', before_number)
-                dict1[number] = 'decreased'
-                decr += 1
-        i += 1
 
-    print('Increased:', incr, '. Decreased:', decr)
-    # First Answer: 1529 (The program runs 1530 because of a puzzle error)
-else:
-    print('Part 2')
-    windows = {}
-    incr = 0
-    decr = 0
-    i = 0
 
-    for number in puzzle:
-        windows[i] = {}
-        if i != 0:
+print("Part 1")
+
+def find_point(i, j):
+    if i == -1 or j == -1:
+        return 9
+    try:
+        return puzzle[i][j]
+    except:
+        return 9
+
+points = []
+positions = []
+
+i = 0
+for line in puzzle:
+    j = 0
+    for number in line:
+        up = find_point(i-1, j)
+        down = find_point(i+1, j)
+        left = find_point(i, j-1)
+        right = find_point(i, j+1)
+
+        if number < up and number < down and number < left and number < right:
+            positions.append([i, j])
+            points.append(number)
+        j += 1
+    i += 1
+
+print("Sum of Risk Levels:", sum(points)+len(points))
+
+# ===================== PART 2 =======================================
+print('Part 2')
+
+def find_basin(position, collector=[],size=1):
+    i, j = position
+    number=find_point(i,j)
+    # Finding points (up,down,left and right, in this order)
+    points = []
+    points.append([i-1, j])
+    points.append([i+1, j])
+    points.append([i, j-1])
+    points.append([i, j+1])
+
+    for point in points:
+        x,y = point
+        p_number=find_point(x,y)
+        if x>=0 and y>=0:
             try:
-                number2 = puzzle[i+1]
-                number3 = puzzle[i+2]
-                windows[i]['quantity'] = int(number)+int(number2)+int(number3)
-                if windows[i]['quantity'] > windows[i-1]['quantity']:
-                    windows[i]['status'] = 'increased'
-                    incr += 1
-                else:
-                    windows[i]['status'] = 'decreased'
-                    decr += 1
-            except IndexError:
-                break
-        else:
-            windows[i]['quantity'] = 0
-        i += 1
+                if p_number != 9 and p_number == number+1 and point not in collector:
+                    print("Position",position,"Point",point,"Number",puzzle[x][y])
+                    collector.append(point)
+                    size = find_basin([x,y],collector,size+1)
+            except:
+                
+                pass
+    return size
 
-    print('Increased:', incr, '. Decreased:', decr)
-    # Second Answer: 1529 (The program runs 1530 because of a puzzle error)
+basins = []
+f_basins =[]
+
+# Finding Basins
+for position in positions:
+    print("Position:", position)
+    basins.append(find_basin(position,[]))
+    # print("Size:", basins[-1])
+
+# Filtering 3 higher basins
+for i in range(0,3):
+    f_basins.append(max(basins))
+    basins.remove(max(basins))
+
+print("Multiplying:",f_basins[0]*f_basins[1]*f_basins[2])
