@@ -9,14 +9,14 @@ with open("./input.txt") as file:
 right_puzzle = [word for line in puzzle for word in line[1].split(" ")]
 default = {2: 1, 4: 4, 3: 7, 7: 8}
 
-def find_word(pattern, words):
+def find_word(pattern, words,i =0):
     selected = ''
     for word in words.split(" "):
             acc =0
             for letter in word:
                 if letter in pattern:
                     acc+=1
-                if acc == len(pattern):
+                if acc == len(pattern) + i:
                     selected = word
                     break
     return selected
@@ -39,10 +39,12 @@ else:
     for line in puzzle:
         ref = {}
         left = line[0].split(" ")
-        left_d = {len(i):" " for i in left}
+        left_d = {len(word):" " for word in left}
+        
         for word in left:
             left_d[len(word)] += " " + word
             left_d[len(word)] = left_d[len(word)].strip()
+        
         ref[left_d[2]] = 1
         ref[left_d[4]] = 4
         ref[left_d[3]] = 7
@@ -66,19 +68,9 @@ else:
 
         # Finding five
         five_search = ' '.join([word for word in left_d[5].split(" ") if word != three])
-        for word in five_search.split(" "):
-            acc =0
-            selected = ''
-            for letter in word:
-                if letter in nine:
-                    acc +=1
-                if acc == len(nine)-1:
-                    selected = word
-                    break
-            if selected:
-                break
-        five =  selected
+        five = find_word(nine,five_search,-1)
         ref[five] = 5
+        
         # After five, 2 comes by default
         two = ' '.join([word for word in left_d[5].split(" ") if word != three and word != five])
         ref[two] = 2
