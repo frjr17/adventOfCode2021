@@ -1,4 +1,6 @@
-from turtle import right
+
+
+import collections
 
 
 with open("./puzzle.txt") as file:
@@ -10,9 +12,8 @@ with open("./puzzle.txt") as file:
 #     print(line)
 
 
-
-
 print("Part 1")
+
 
 def find_point(i, j):
     if i == -1 or j == -1:
@@ -21,6 +22,7 @@ def find_point(i, j):
         return puzzle[i][j]
     except:
         return 9
+
 
 points = []
 positions = []
@@ -45,9 +47,10 @@ print("Sum of Risk Levels:", sum(points)+len(points))
 # ===================== PART 2 =======================================
 print('Part 2')
 
-def find_basin(position, collector=[],size=1):
+
+def find_basin(position, collector=[], size=1):
     i, j = position
-    number=find_point(i,j)
+    number = find_point(i, j)
     # Finding points (up,down,left and right, in this order)
     points = []
     points.append([i-1, j])
@@ -56,31 +59,33 @@ def find_basin(position, collector=[],size=1):
     points.append([i, j+1])
 
     for point in points:
-        x,y = point
-        p_number=find_point(x,y)
-        if x>=0 and y>=0:
+        x, y = point
+        p_number = find_point(x, y)
+
+        if x > -1 and y > -1 and p_number != 9:
             try:
-                if p_number != 9 and p_number == number+1 and point not in collector:
-                    print("Position",position,"Point",point,"Number",puzzle[x][y])
+                if p_number == number+1 and point not in collector:
+                    # print("Position",position,"Point",point,"Number",puzzle[x][y])
                     collector.append(point)
-                    size = find_basin([x,y],collector,size+1)
+                    size,collector = find_basin([x, y], collector, size+1)
             except:
-                
+
                 pass
-    return size
+    return [size,collector]
+
 
 basins = []
-f_basins =[]
-
+f_basins = []
+collector =[]
 # Finding Basins
 for position in positions:
-    print("Position:", position)
-    basins.append(find_basin(position,[]))
-    # print("Size:", basins[-1])
+    # print("Position:", position)
+    basin,collector = find_basin(position, collector)
+    basins.append(basin)
 
 # Filtering 3 higher basins
-for i in range(0,3):
+for i in range(0, 3):
     f_basins.append(max(basins))
     basins.remove(max(basins))
 
-print("Multiplying:",f_basins[0]*f_basins[1]*f_basins[2])
+print("Multiplying:", f_basins[0]*f_basins[1]*f_basins[2])
